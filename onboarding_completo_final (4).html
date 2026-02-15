@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Onboarding - Holder Partners</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #1e293b;
+            --secondary: #334155;
+            --accent: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #e5e7eb;
+            color: #1f2937;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #1e3a8a;
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            border-bottom: 2px solid #1e40af;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .alert {
+            background: #1e3a8a;
+            border: 1px solid #1e40af;
+            border-left: 4px solid #1e40af;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .progress-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-step::before {
+            content: attr(data-step);
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 8px;
+            background: #d1d5db;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #6b7280;
+        }
+
+        .progress-step.active::before {
+            background: #2563eb;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+            color: white;
+        }
+
+        .progress-step.completed::before {
+            background: var(--success);
+            color: white;
+        }
+
+        .progress-step-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #d1d5db;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, var(--success));
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .section {
+            background: #2563eb;
+            padding: 35px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #1d4ed8;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+            color: white;
+        }
+
+        .section.active { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .subsection-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 30px 0 15px;
+            color: white;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+        }
+
+        label .required { color: #fca5a5; margin-left: 3px; }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            color: #1f2937;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input:disabled, select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #f3f4f6;
+        }
+
+        textarea { min-height: 100px; resize: vertical; font-family: inherit; }
+
+        .btn {
+            padding: 12px 30px;
+            border: 2px solid #1e3a8a;
+            background: #1e3a8a;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+        }
+
+        .btn-primary {
+            background: #1e3a8a;
+            color: white;
+            border-color: #1e3a8a;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .dynamic-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dynamic-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .dynamic-item-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+        }
+
+        .btn-remove {
+            padding: 6px 15px;
+            font-size: 12px;
+            border-color: var(--error);
+            color: var(--error);
+            background: white;
+        }
+
+        .btn-remove:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-add {
+            margin-top: 15px;
+            border-color: var(--success);
+            color: white;
+            background: var(--success);
+        }
+
+        .btn-add:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .message-warning {
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid #fbbf24;
+            color: #fef3c7;
+        }
+
+        .message-info {
+            background: rgba(167, 243, 208, 0.2);
+            border: 1px solid #6ee7b7;
+            color: #d1fae5;
+        }
+
+        .message-error {
+            background: rgba(252, 165, 165, 0.2);
+            border: 1px solid #fca5a5;
+            color: #fee2e2;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label, .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .hidden { display: none !important; }
+
+        .tech-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tech-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tech-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 12px;
+            color: #6b7280;
+            display: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .save-indicator.saving {
+            display: block;
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .save-indicator.saved {
+            display: block;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .btn-submit {
+            background: var(--success);
+            border-color: var(--success);
+            font-size: 16px;
+            padding: 15px 40px;
+        }
+
+        .btn-submit:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+        /* ESTILOS PANTALLA DESCARGA */
+        .download-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .download-info {
+            flex: 1;
+        }
+
+        .download-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .download-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-download {
+            background: white;
+            color: #1e3a8a;
+            border-color: white;
+            padding: 10px 25px;
+        }
+
+        .btn-download:hover {
+            background: #f3f4f6;
+        }
+
+        /* ESTILOS PANTALLA CARGA */
+        .upload-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .upload-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .upload-status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .upload-status.uploaded {
+            background: rgba(16, 185, 129, 0.3);
+            color: #d1fae5;
+        }
+
+        .file-info {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 8px;
+        }
+
+        /* LOADING OVERLAY */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #1e3a8a;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #1f2937;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .loading-subtext {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">HOLDER PARTNERS</div>
+            <div style="font-size: 14px; color: rgba(255, 255, 255, 0.8);">Sistema de Onboarding</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="alert">
+            <span>⚠️</span>
+            <div>
+                <strong>Importante:</strong> Guarde frecuentemente para no perder información.
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">
+                    <div class="progress-step-label">Datos</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="progress-step-label">Formación</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="progress-step-label">Tech</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="progress-step-label">Experiencia</div>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <div class="progress-step-label">Referencias</div>
+                </div>
+                <div class="progress-step" data-step="6">
+                    <div class="progress-step-label">Beneficiarios</div>
+                </div>
+                <div class="progress-step" data-step="7">
+                    <div class="progress-step-label">Pensiones</div>
+                </div>
+                <div class="progress-step" data-step="8">
+                    <div class="progress-step-label">Bancario</div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <form id="onboardingForm">
+            <!-- SECCIÓN 1: DATOS PERSONALES -->
+            <div class="section active" data-section="1">
+                <h2 class="section-title">Sección 1: Datos Personales y Contacto</h2>
+                <p class="section-subtitle">Complete toda su información personal. Los campos con * son obligatorios.</p>
+
+                <h3 class="subsection-title">Datos Personales</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Apellido Paterno <span class="required">*</span></label>
+                        <input type="text" id="apellidoPaterno" name="apellidoPaterno" required disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido Materno <span class="required">*</span></label>
+                        <input type="text" id="apellidoMaterno" name="apellidoMaterno" required disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombres <span class="required">*</span></label>
+                    <input type="text" id="nombres" name="nombres" required disabled>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Documento <span class="required">*</span></label>
+                        <select id="tipoDocumento" name="tipoDocumento" required disabled>
+                            <option value="">Seleccionar</option>
+                            <option value="DNI">DNI</option>
+                            <option value="CE">Carné de Extranjería</option>
+                            <option value="Pasaporte">Pasaporte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Documento <span class="required">*</span></label>
+                        <input type="text" id="numeroDocumento" name="numeroDocumento" required disabled>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento <span class="required">*</span></label>
+                        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Lugar de Nacimiento <span class="required">*</span></label>
+                        <input type="text" id="lugarNacimiento" name="lugarNacimiento" required placeholder="Ej: Lima, Perú">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nacionalidad <span class="required">*</span></label>
+                        <input type="text" id="nacionalidad" name="nacionalidad" required value="Perú">
+                    </div>
+                    <div class="form-group">
+                        <label>Sexo <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="sexo" value="M" required> Masculino</label>
+                            <label><input type="radio" name="sexo" value="F" required> Femenino</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Estado Civil <span class="required">*</span></label>
+                    <select id="estadoCivil" name="estadoCivil" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Soltero/a">Soltero/a</option>
+                        <option value="Casado/a">Casado/a</option>
+                        <option value="Conviviente">Conviviente</option>
+                        <option value="Divorciado/a">Divorciado/a</option>
+                        <option value="Viudo/a">Viudo/a</option>
+                    </select>
+                </div>
+
+                <h3 class="subsection-title">Datos de Contacto</h3>
+
+                <div class="form-group">
+                    <label>Domicilio Actual <span class="required">*</span></label>
+                    <input type="text" id="domicilio" name="domicilio" required placeholder="Dirección completa">
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Distrito <span class="required">*</span></label>
+                        <input type="text" id="distrito" name="distrito" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Provincia <span class="required">*</span></label>
+                        <input type="text" id="provincia" name="provincia" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ciudad <span class="required">*</span></label>
+                        <input type="text" id="ciudad" name="ciudad" required>
+                    </div>
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Teléfono Fijo</label>
+                        <input type="tel" id="telefonoFijo" name="telefonoFijo" placeholder="Opcional">
+                    </div>
+                    <div class="form-group">
+                        <label>Celular <span class="required">*</span></label>
+                        <input type="tel" id="celular" name="celular" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Correo Electrónico <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" required disabled>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Información del Puesto</h3>
+
+                <div class="form-group">
+                    <label>Puesto al que Postula <span class="required">*</span></label>
+                    <input type="text" id="puesto" name="puesto" required disabled>
+                    <div class="message message-info">Este campo no se puede modificar</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Pretensión Salarial (Opcional)</label>
+                        <input type="number" id="pretensionSalarial" name="pretensionSalarial" placeholder="En soles">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Disponibilidad <span class="required">*</span></label>
+                        <input type="date" id="fechaDisponibilidad" name="fechaDisponibilidad" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Disponibilidad para Viajar <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="disponibilidadViajar" value="Sí" required> Sí</label>
+                            <label><input type="radio" name="disponibilidadViajar" value="No" required> No</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Disponibilidad de Horario <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="disponibilidadHorario" value="Sí" required> Sí</label>
+                            <label><input type="radio" name="disponibilidadHorario" value="No" required> No</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: FORMACIÓN -->
+            <div class="section" data-section="2">
+                <h2 class="section-title">Sección 2: Formación Académica y Certificaciones</h2>
+                <p class="section-subtitle">Máximo 6 estudios y 6 certificaciones. El primero de cada uno es obligatorio.</p>
+
+                <h3 class="subsection-title">Educación Superior</h3>
+                <div id="estudiosContainer"></div>
+                <button type="button" class="btn btn-add" onclick="addEstudio()">+ Agregar Estudio (Máx 6)</button>
+
+                <h3 class="subsection-title">Certificaciones Tecnológicas</h3>
+                <div id="certificacionesContainer"></div>
+                <button type="button" class="btn btn-add" onclick="addCertificacion()">+ Agregar Certificación (Máx 6)</button>
+            </div>
+
+            <!-- SECCIÓN 3: CONOCIMIENTOS TECNOLÓGICOS -->
+            <div class="section" data-section="3">
+                <h2 class="section-title">Sección 3: Conocimientos Tecnológicos</h2>
+                <p class="section-subtitle">Seleccione los conocimientos que posee e indique su nivel y años de experiencia.</p>
+
+                <h3 class="subsection-title">Sistemas y Tecnologías</h3>
+                
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_1" name="tech_1" onchange="toggleTechFields(1)">
+                        <label for="tech_1" style="margin: 0;">SISTEMAS OPERATIVOS (Windows, Linux, macOS)</label>
+                    </div>
+                    <div id="tech_1_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_1_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_1_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_2" name="tech_2" onchange="toggleTechFields(2)">
+                        <label for="tech_2" style="margin: 0;">OFFICE / GOOGLE WORKSPACE (Word, Excel, PowerPoint, etc.)</label>
+                    </div>
+                    <div id="tech_2_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_2_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_2_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_3" name="tech_3" onchange="toggleTechFields(3)">
+                        <label for="tech_3" style="margin: 0;">LENGUAJES DE PROGRAMACIÓN (Python, Java, C++, JavaScript, etc.)</label>
+                    </div>
+                    <div id="tech_3_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_3_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_3_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_4" name="tech_4" onchange="toggleTechFields(4)">
+                        <label for="tech_4" style="margin: 0;">BASES DE DATOS (SQL Server, MySQL, Oracle, MongoDB, etc.)</label>
+                    </div>
+                    <div id="tech_4_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_4_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_4_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_5" name="tech_5" onchange="toggleTechFields(5)">
+                        <label for="tech_5" style="margin: 0;">SISTEMAS ERP / CRM (SAP, Oracle, Salesforce, etc.)</label>
+                    </div>
+                    <div id="tech_5_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_5_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_5_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_6" name="tech_6" onchange="toggleTechFields(6)">
+                        <label for="tech_6" style="margin: 0;">CIBERSEGURIDAD (Firewalls, Antivirus, Pentesting, SIEM, etc.)</label>
+                    </div>
+                    <div id="tech_6_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_6_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_6_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_7" name="tech_7" onchange="toggleTechFields(7)">
+                        <label for="tech_7" style="margin: 0;">SERVICIOS CLOUD (AWS, Azure, Google Cloud Platform)</label>
+                    </div>
+                    <div id="tech_7_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_7_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_7_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-checkbox">
+                        <input type="checkbox" id="tech_8" name="tech_8" onchange="toggleTechFields(8)">
+                        <label for="tech_8" style="margin: 0;">ADMINISTRACIÓN DE REDES (Cisco, Routing, Switching, VPN)</label>
+                    </div>
+                    <div id="tech_8_fields" class="tech-fields hidden">
+                        <div class="form-group">
+                            <label>Nivel</label>
+                            <select name="tech_8_nivel">
+                                <option value="">Seleccionar</option>
+                                <option value="Básico">Básico</option>
+                                <option value="Intermedio">Intermedio</option>
+                                <option value="Avanzado">Avanzado</option>
+                                <option value="Experto">Experto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Años de Experiencia</label>
+                            <input type="number" name="tech_8_anios" min="0" max="50">
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Otros Conocimientos (Máx 10)</h3>
+                <div id="otrosConocimientosContainer"></div>
+                <button type="button" class="btn btn-add" onclick="addOtroConocimiento()">+ Agregar Otro Conocimiento</button>
+            </div>
+
+            <!-- SECCIÓN 4: EXPERIENCIA LABORAL -->
+            <div class="section" data-section="4">
+                <h2 class="section-title">Sección 4: Experiencia Laboral</h2>
+                <p class="section-subtitle">Máximo 6 experiencias. Las primeras 2 son obligatorias. Indicar en orden cronológico inverso (del más reciente al más antiguo).</p>
+
+                <div id="experienciaContainer"></div>
+                <button type="button" class="btn btn-add" onclick="addExperiencia()">+ Agregar Experiencia (Máx 6)</button>
+            </div>
+
+            <!-- SECCIÓN 5: REFERENCIAS -->
+            <div class="section" data-section="5">
+                <h2 class="section-title">Sección 5: Referencias Personales</h2>
+                <p class="section-subtitle">Máximo 6 referencias. Las primeras 2 son obligatorias. No incluir familiares.</p>
+
+                <div id="referenciasContainer"></div>
+                <button type="button" class="btn btn-add" onclick="addReferencia()">+ Agregar Referencia (Máx 6)</button>
+            </div>
+
+            <!-- SECCIÓN 6: BENEFICIARIOS -->
+            <div class="section" data-section="6">
+                <h2 class="section-title">Sección 6: Beneficiarios del Seguro de Vida Ley</h2>
+                <p class="section-subtitle">Complete la información de sus beneficiarios según corresponda.</p>
+
+                <div class="form-group">
+                    <label>¿Tiene cónyuge y/o hijos? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="tieneConyuge" value="Sí" required onchange="toggleBeneficiarios()"> Sí</label>
+                        <label><input type="radio" name="tieneConyuge" value="No" required onchange="toggleBeneficiarios()"> No</label>
+                    </div>
+                </div>
+
+                <div id="primerBeneficiarioSection" class="hidden">
+                    <h3 class="subsection-title">Primer Beneficiario (Cónyuge e Hijos) - Máx 10</h3>
+                    <div id="primerBeneficiarioContainer"></div>
+                    <button type="button" class="btn btn-add" onclick="addPrimerBeneficiario()">+ Agregar Beneficiario</button>
+                </div>
+
+                <div id="otroBeneficiarioSection" class="hidden">
+                    <h3 class="subsection-title">Otros Beneficiarios (Padres y Hermanos menores de edad) - Máx 10</h3>
+                    <div id="otroBeneficiarioContainer"></div>
+                    <button type="button" class="btn btn-add" onclick="addOtroBeneficiario()">+ Agregar Beneficiario</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 7: SISTEMA DE PENSIONES -->
+            <div class="section" data-section="7">
+                <h2 class="section-title">Sección 7: Sistema de Pensiones y Declaraciones</h2>
+                <p class="section-subtitle">Complete la información sobre su situación de pensiones y quinta categoría.</p>
+
+                <h3 class="subsection-title">Declaración Jurada - Ingresos de Quinta Categoría</h3>
+                
+                <div class="form-group">
+                    <label>¿Ha recibido ingresos de quinta categoría este año? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="djQuinta" value="Sí" required onchange="toggleDJQuinta()"> Sí</label>
+                        <label><input type="radio" name="djQuinta" value="No" required onchange="toggleDJQuinta()"> No</label>
+                    </div>
+                </div>
+
+                <div id="djQuintaMessage" class="hidden">
+                    <div class="message message-warning">
+                        ⚠️ DEBERÁS ADJUNTAR CERTIFICADO DE QUINTA CATEGORÍA DE ESTE AÑO
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Afiliación a AFP</h3>
+
+                <div class="form-group">
+                    <label>Seleccione su AFP <span class="required">*</span></label>
+                    <select id="afp" name="afp" required onchange="toggleAFP()">
+                        <option value="">Seleccionar</option>
+                        <option value="Habitat">AFP Habitat</option>
+                        <option value="Integra">AFP Integra</option>
+                        <option value="Prima">AFP Prima</option>
+                        <option value="Profuturo">AFP Profuturo</option>
+                        <option value="NoAfiliadoDesea">No estoy afiliado pero deseo afiliarme</option>
+                        <option value="NoAfiliadoONP">No estoy afiliado a AFP (se descontará ONP)</option>
+                        <option value="Jubilado">Jubilado</option>
+                    </select>
+                </div>
+
+                <div id="afpCusppField" class="form-group hidden">
+                    <label>Código CUSPP (12 dígitos) <span class="required">*</span></label>
+                    <input type="text" id="cuspp" name="cuspp" maxlength="12" pattern="[0-9]{12}" placeholder="12 dígitos">
+                    <small style="color: rgba(255,255,255,0.7); display: block; margin-top: 5px;">Ingrese exactamente 12 dígitos</small>
+                </div>
+
+                <div id="afpJubiladoMessage" class="hidden">
+                    <div class="message message-info">
+                        ℹ️ Deberá adjuntar constancia de jubilación
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 8: DATOS BANCARIOS -->
+            <div class="section" data-section="8">
+                <h2 class="section-title">Sección 8: Datos Bancarios</h2>
+                <p class="section-subtitle">Complete su información bancaria para el abono de remuneraciones.</p>
+
+                <div class="form-group">
+                    <label>Entidad Bancaria <span class="required">*</span></label>
+                    <select id="banco" name="banco" required onchange="updateBancoValidation()">
+                        <option value="">Seleccionar</option>
+                        <option value="BCP">BCP</option>
+                        <option value="BBVA">BBVA</option>
+                        <option value="Scotiabank">Scotiabank</option>
+                        <option value="Interbank">Interbank</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div id="bancoOtroField" class="form-group hidden">
+                    <label>Especifique el Banco <span class="required">*</span></label>
+                    <input type="text" id="bancoOtro" name="bancoOtro" placeholder="Nombre del banco">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Cuenta</label>
+                        <input type="text" value="AHORROS" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Moneda</label>
+                        <input type="text" value="SOLES" disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de Cuenta <span class="required">*</span></label>
+                    <input type="text" id="numeroCuenta" name="numeroCuenta" required>
+                    <small id="cuentaHelp" style="color: rgba(255,255,255,0.7); display: block; margin-top: 5px;">Seleccione primero el banco</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Código Interbancario - CCI (20 dígitos) <span class="required">*</span></label>
+                    <input type="text" id="cci" name="cci" required maxlength="20" pattern="[0-9]{20}" placeholder="20 dígitos">
+                    <small style="color: rgba(255,255,255,0.7); display: block; margin-top: 5px;">Ingrese exactamente 20 dígitos</small>
+                </div>
+
+                <div class="message message-info">
+                    ℹ️ Deberá adjuntar pantallazo donde figure el número de cuenta y CCI
+                </div>
+            </div>
+
+            <!-- NAVEGACIÓN -->
+            <div class="button-group">
+                <button type="button" class="btn" id="btnPrevious">← Anterior</button>
+                <div style="display: flex; gap: 15px;">
+                    <button type="button" class="btn" onclick="guardarBorrador()">💾 Guardar Borrador</button>
+                    <button type="button" class="btn btn-primary" id="btnNext">Siguiente →</button>
+                    <button type="submit" class="btn btn-submit hidden" id="btnSubmit">✓ Enviar Formulario</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+        <!-- PANTALLA 9: DESCARGA DE PDFs -->
+        <div id="pantallaDescarga" class="section hidden">
+            <h2 class="section-title">📄 Descargue sus Documentos</h2>
+            <p class="section-subtitle">Hemos generado sus documentos. Descárguelos, fírmelos e imprímalos.</p>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">01. Solicitud de Empleo</div>
+                    <div class="download-desc">Documento principal con su información personal y laboral</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(1)">📥 Descargar</button>
+            </div>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">02. Declaración Jurada de Beneficiarios</div>
+                    <div class="download-desc">Beneficiarios del seguro de vida ley</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(2)">📥 Descargar</button>
+            </div>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">03. Carta Compromiso - Cursos Obligatorios</div>
+                    <div class="download-desc">Compromiso de completar cursos en 30 días</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(3)">📥 Descargar</button>
+            </div>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">04. Consentimiento de Datos Personales</div>
+                    <div class="download-desc">Autorización para tratamiento de datos</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(4)">📥 Descargar</button>
+            </div>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">05. Declaración Jurada - Ingresos Quinta Categoría</div>
+                    <div class="download-desc">Declaración de ingresos previos</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(5)">📥 Descargar</button>
+            </div>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">06. Constancia de Afiliación AFP</div>
+                    <div class="download-desc">Información de sistema de pensiones</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(6)">📥 Descargar</button>
+            </div>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">07. Cargo de Recepción de Normativas</div>
+                    <div class="download-desc">Constancia de recepción de reglamentos</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(7)">📥 Descargar</button>
+            </div>
+
+            <div class="download-card">
+                <div class="download-info">
+                    <div class="download-title">08. Formato de Datos Bancarios</div>
+                    <div class="download-desc">Información para abono de remuneraciones</div>
+                </div>
+                <button type="button" class="btn btn-download" onclick="descargarPDF(8)">📥 Descargar</button>
+            </div>
+
+            <div class="message message-info" style="margin-top: 30px;">
+                ℹ️ <strong>Siguiente paso:</strong> Descargue todos los documentos, fírmelos y súbalos en la siguiente pantalla.
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-primary" onclick="irAPantallaCarga()" style="margin-left: auto;">Continuar con Carga de Documentos →</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 10: CARGA DE PDFs FIRMADOS -->
+        <div id="pantallaCarga" class="section hidden">
+            <h2 class="section-title">📤 Suba sus Documentos Firmados</h2>
+            <p class="section-subtitle">Cargue los 8 documentos que descargó y firmó. Solo se aceptan archivos PDF.</p>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">01. Solicitud de Empleo</div>
+                    <div class="upload-status" id="status_01">Pendiente</div>
+                </div>
+                <input type="file" id="upload_01" accept=".pdf" onchange="validarArchivo(1)">
+                <div class="file-info" id="info_01"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">02. Declaración Jurada de Beneficiarios</div>
+                    <div class="upload-status" id="status_02">Pendiente</div>
+                </div>
+                <input type="file" id="upload_02" accept=".pdf" onchange="validarArchivo(2)">
+                <div class="file-info" id="info_02"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">03. Carta Compromiso - Cursos</div>
+                    <div class="upload-status" id="status_03">Pendiente</div>
+                </div>
+                <input type="file" id="upload_03" accept=".pdf" onchange="validarArchivo(3)">
+                <div class="file-info" id="info_03"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">04. Consentimiento de Datos</div>
+                    <div class="upload-status" id="status_04">Pendiente</div>
+                </div>
+                <input type="file" id="upload_04" accept=".pdf" onchange="validarArchivo(4)">
+                <div class="file-info" id="info_04"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">05. DJ Ingresos Quinta Categoría</div>
+                    <div class="upload-status" id="status_05">Pendiente</div>
+                </div>
+                <input type="file" id="upload_05" accept=".pdf" onchange="validarArchivo(5)">
+                <div class="file-info" id="info_05"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">06. Constancia AFP</div>
+                    <div class="upload-status" id="status_06">Pendiente</div>
+                </div>
+                <input type="file" id="upload_06" accept=".pdf" onchange="validarArchivo(6)">
+                <div class="file-info" id="info_06"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">07. Cargo Normativas</div>
+                    <div class="upload-status" id="status_07">Pendiente</div>
+                </div>
+                <input type="file" id="upload_07" accept=".pdf" onchange="validarArchivo(7)">
+                <div class="file-info" id="info_07"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="upload-header">
+                    <div class="upload-title">08. Datos Bancarios</div>
+                    <div class="upload-status" id="status_08">Pendiente</div>
+                </div>
+                <input type="file" id="upload_08" accept=".pdf" onchange="validarArchivo(8)">
+                <div class="file-info" id="info_08"></div>
+            </div>
+
+            <div class="message message-warning" style="margin-top: 30px;">
+                ⚠️ Verifique que todos los documentos estén firmados antes de subirlos. Los archivos deben ser en formato PDF.
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn" onclick="volverADescarga()">← Volver a Descarga</button>
+                <button type="button" class="btn btn-submit" onclick="enviarDocumentosFirmados()" id="btnEnviarFirmados" disabled>✓ Enviar Documentos Firmados</button>
+            </div>
+        </div>
+
+        <!-- PANTALLA FINAL -->
+        <div id="pantallaFinal" class="section hidden">
+            <h2 class="section-title">✅ Proceso Completado</h2>
+            <div style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 80px; margin-bottom: 20px;">🎉</div>
+                <h3 style="font-size: 28px; margin-bottom: 20px;">¡Onboarding Completado!</h3>
+                <p style="font-size: 16px; margin-bottom: 30px;">
+                    Sus documentos han sido recibidos correctamente. El departamento de Recursos Humanos se pondrá en contacto con usted.
+                </p>
+                <div class="message message-info">
+                    ℹ️ Recibirá un correo de confirmación próximamente.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Procesando...</div>
+            <div class="loading-subtext" id="loadingSubtext">Por favor espere</div>
+        </div>
+    </div>
+
+    <div class="save-indicator" id="saveIndicator">Guardando...</div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 8;
+        let estudiosCount = 0;
+        let certificacionesCount = 0;
+        let experienciaCount = 0;
+        let referenciasCount = 0;
+        let otrosConocimientosCount = 0;
+        let primerBeneficiarioCount = 0;
+        let otroBeneficiarioCount = 0;
+
+        // Pre-llenado desde URL
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('apellidoP')) document.getElementById('apellidoPaterno').value = params.get('apellidoP');
+        if (params.get('apellidoM')) document.getElementById('apellidoMaterno').value = params.get('apellidoM');
+        if (params.get('nombres')) document.getElementById('nombres').value = params.get('nombres');
+        if (params.get('tipoDoc')) document.getElementById('tipoDocumento').value = params.get('tipoDoc');
+        if (params.get('numDoc')) document.getElementById('numeroDocumento').value = params.get('numDoc');
+        if (params.get('email')) document.getElementById('email').value = params.get('email');
+        if (params.get('puesto')) document.getElementById('puesto').value = params.get('puesto');
+
+        // Navegación
+        document.getElementById('btnNext').addEventListener('click', () => {
+            if (currentSection < totalSections) {
+                document.querySelector(`[data-section="${currentSection}"]`).classList.remove('active');
+                document.querySelectorAll('.progress-step')[currentSection - 1].classList.add('completed');
+                currentSection++;
+                document.querySelector(`[data-section="${currentSection}"]`).classList.add('active');
+                document.querySelectorAll('.progress-step')[currentSection - 1].classList.add('active');
+                updateProgress();
+                updateNavigationButtons();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        document.getElementById('btnPrevious').addEventListener('click', () => {
+            if (currentSection > 1) {
+                document.querySelector(`[data-section="${currentSection}"]`).classList.remove('active');
+                document.querySelectorAll('.progress-step')[currentSection - 1].classList.remove('active');
+                currentSection--;
+                document.querySelector(`[data-section="${currentSection}"]`).classList.add('active');
+                updateProgress();
+                updateNavigationButtons();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        function updateProgress() {
+            const percent = (currentSection / totalSections) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+
+        function updateNavigationButtons() {
+            const btnNext = document.getElementById('btnNext');
+            const btnSubmit = document.getElementById('btnSubmit');
+            
+            if (currentSection === totalSections) {
+                btnNext.classList.add('hidden');
+                btnSubmit.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnSubmit.classList.add('hidden');
+            }
+        }
+
+        // ESTUDIOS
+        function addEstudio() {
+            if (estudiosCount >= 6) {
+                alert('Máximo 6 estudios permitidos');
+                return;
+            }
+            estudiosCount++;
+            const container = document.getElementById('estudiosContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.id = `estudio${estudiosCount}`;
+            div.innerHTML = `
+                <div class="dynamic-item-header">
+                    <div class="dynamic-item-title">Estudio #${estudiosCount} ${estudiosCount === 1 ? '(Obligatorio)' : ''}</div>
+                    ${estudiosCount > 1 ? `<button type="button" class="btn btn-remove" onclick="removeEstudio(${estudiosCount})">✕ Eliminar</button>` : ''}
+                </div>
+                <div class="form-group">
+                    <label>Institución ${estudiosCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                    <input type="text" name="estudio_${estudiosCount}_institucion" ${estudiosCount === 1 ? 'required' : ''}>
+                </div>
+                <div class="form-group">
+                    <label>Carrera/Especialidad ${estudiosCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                    <input type="text" name="estudio_${estudiosCount}_carrera" ${estudiosCount === 1 ? 'required' : ''}>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Año Inicio ${estudiosCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                        <input type="number" name="estudio_${estudiosCount}_anioInicio" min="1950" max="2030" ${estudiosCount === 1 ? 'required' : ''}>
+                    </div>
+                    <div class="form-group">
+                        <label>Año Término ${estudiosCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                        <input type="number" name="estudio_${estudiosCount}_anioFin" min="1950" max="2030" ${estudiosCount === 1 ? 'required' : ''}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Grado/Título ${estudiosCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                    <input type="text" name="estudio_${estudiosCount}_grado" placeholder="Bachiller, Titulado, etc." ${estudiosCount === 1 ? 'required' : ''}>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeEstudio(id) {
+            document.getElementById(`estudio${id}`).remove();
+        }
+
+        // CERTIFICACIONES
+        function addCertificacion() {
+            if (certificacionesCount >= 6) {
+                alert('Máximo 6 certificaciones permitidas');
+                return;
+            }
+            certificacionesCount++;
+            const container = document.getElementById('certificacionesContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.id = `cert${certificacionesCount}`;
+            div.innerHTML = `
+                <div class="dynamic-item-header">
+                    <div class="dynamic-item-title">Certificación #${certificacionesCount} ${certificacionesCount === 1 ? '(Obligatorio)' : ''}</div>
+                    ${certificacionesCount > 1 ? `<button type="button" class="btn btn-remove" onclick="removeCertificacion(${certificacionesCount})">✕ Eliminar</button>` : ''}
+                </div>
+                <div class="form-group">
+                    <label>Nombre de la Certificación ${certificacionesCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                    <input type="text" name="cert_${certificacionesCount}_nombre" ${certificacionesCount === 1 ? 'required' : ''}>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Institución Emisora ${certificacionesCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                        <input type="text" name="cert_${certificacionesCount}_institucion" ${certificacionesCount === 1 ? 'required' : ''}>
+                    </div>
+                    <div class="form-group">
+                        <label>Año de Obtención ${certificacionesCount === 1 ? '<span class="required">*</span>' : ''}</label>
+                        <input type="number" name="cert_${certificacionesCount}_anio" min="1950" max="2030" ${certificacionesCount === 1 ? 'required' : ''}>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeCertificacion(id) {
+            document.getElementById(`cert${id}`).remove();
+        }
+
+        // CONOCIMIENTOS TECNOLÓGICOS
+        function toggleTechFields(id) {
+            const checkbox = document.getElementById(`tech_${id}`);
+            const fields = document.getElementById(`tech_${id}_fields`);
+            
+            if (checkbox.checked) {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
+        }
+
+        function addOtroConocimiento() {
+            if (otrosConocimientosCount >= 10) {
+                alert('Máximo 10 otros conocimientos permitidos');
+                return;
+            }
+            otrosConocimientosCount++;
+            const container = document.getElementById('otrosConocimientosContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.id = `otroConocimiento${otrosConocimientosCount}`;
+            div.innerHTML = `
+                <div class="dynamic-item-header">
+                    <div class="dynamic-item-title">Otro Conocimiento #${otrosConocimientosCount}</div>
+                    <button type="button" class="btn btn-remove" onclick="removeOtroConocimiento(${otrosConocimientosCount})">✕ Eliminar</button>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Sistema/Tecnología</label>
+                    <input type="text" name="otroConocimiento_${otrosConocimientosCount}_nombre" placeholder="Ej: Photoshop, AutoCAD, etc.">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nivel</label>
+                        <select name="otroConocimiento_${otrosConocimientosCount}_nivel">
+                            <option value="">Seleccionar</option>
+                            <option value="Básico">Básico</option>
+                            <option value="Intermedio">Intermedio</option>
+                            <option value="Avanzado">Avanzado</option>
+                            <option value="Experto">Experto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Años de Experiencia</label>
+                        <input type="number" name="otroConocimiento_${otrosConocimientosCount}_anios" min="0" max="50">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeOtroConocimiento(id) {
+            document.getElementById(`otroConocimiento${id}`).remove();
+        }
+
+        // EXPERIENCIA LABORAL
+        function addExperiencia() {
+            if (experienciaCount >= 6) {
+                alert('Máximo 6 experiencias permitidas');
+                return;
+            }
+            experienciaCount++;
+            const container = document.getElementById('experienciaContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.id = `exp${experienciaCount}`;
+            const isRequired = experienciaCount <= 2;
+            div.innerHTML = `
+                <div class="dynamic-item-header">
+                    <div class="dynamic-item-title">Experiencia #${experienciaCount} ${isRequired ? '(Obligatorio)' : ''}</div>
+                    ${experienciaCount > 2 ? `<button type="button" class="btn btn-remove" onclick="removeExperiencia(${experienciaCount})">✕ Eliminar</button>` : ''}
+                </div>
+                <div class="form-group">
+                    <label>Empresa ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                    <input type="text" name="exp_${experienciaCount}_empresa" ${isRequired ? 'required' : ''}>
+                </div>
+                <div class="form-group">
+                    <label>Cargo ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                    <input type="text" name="exp_${experienciaCount}_cargo" ${isRequired ? 'required' : ''}>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha Inicio ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                        <input type="date" name="exp_${experienciaCount}_fechaInicio" ${isRequired ? 'required' : ''}>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Salida ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                        <input type="date" name="exp_${experienciaCount}_fechaSalida" ${isRequired ? 'required' : ''}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Funciones Principales ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                    <textarea name="exp_${experienciaCount}_funciones" placeholder="Describa brevemente sus funciones principales" ${isRequired ? 'required' : ''}></textarea>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeExperiencia(id) {
+            document.getElementById(`exp${id}`).remove();
+        }
+
+        // REFERENCIAS
+        function addReferencia() {
+            if (referenciasCount >= 6) {
+                alert('Máximo 6 referencias permitidas');
+                return;
+            }
+            referenciasCount++;
+            const container = document.getElementById('referenciasContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.id = `ref${referenciasCount}`;
+            const isRequired = referenciasCount <= 2;
+            div.innerHTML = `
+                <div class="dynamic-item-header">
+                    <div class="dynamic-item-title">Referencia #${referenciasCount} ${isRequired ? '(Obligatorio)' : ''}</div>
+                    ${referenciasCount > 2 ? `<button type="button" class="btn btn-remove" onclick="removeReferencia(${referenciasCount})">✕ Eliminar</button>` : ''}
+                </div>
+                <div class="form-group">
+                    <label>Nombre Completo ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                    <input type="text" name="ref_${referenciasCount}_nombre" ${isRequired ? 'required' : ''}>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ocupación ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                        <input type="text" name="ref_${referenciasCount}_ocupacion" ${isRequired ? 'required' : ''}>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono ${isRequired ? '<span class="required">*</span>' : ''}</label>
+                        <input type="tel" name="ref_${referenciasCount}_telefono" ${isRequired ? 'required' : ''}>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeReferencia(id) {
+            document.getElementById(`ref${id}`).remove();
+        }
+
+        // BENEFICIARIOS
+        function toggleBeneficiarios() {
+            const tieneConyuge = document.querySelector('input[name="tieneConyuge"]:checked').value;
+            const primerSection = document.getElementById('primerBeneficiarioSection');
+            const otroSection = document.getElementById('otroBeneficiarioSection');
+            
+            if (tieneConyuge === 'Sí') {
+                primerSection.classList.remove('hidden');
+                otroSection.classList.add('hidden');
+            } else {
+                primerSection.classList.add('hidden');
+                otroSection.classList.remove('hidden');
+            }
+        }
+
+        function addPrimerBeneficiario() {
+            if (primerBeneficiarioCount >= 10) {
+                alert('Máximo 10 beneficiarios permitidos');
+                return;
+            }
+            primerBeneficiarioCount++;
+            const container = document.getElementById('primerBeneficiarioContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.id = `primerBenef${primerBeneficiarioCount}`;
+            div.innerHTML = `
+                <div class="dynamic-item-header">
+                    <div class="dynamic-item-title">Beneficiario #${primerBeneficiarioCount}</div>
+                    <button type="button" class="btn btn-remove" onclick="removePrimerBeneficiario(${primerBeneficiarioCount})">✕ Eliminar</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>DNI</label>
+                        <input type="text" name="primerBenef_${primerBeneficiarioCount}_dni" maxlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombres y Apellidos</label>
+                        <input type="text" name="primerBenef_${primerBeneficiarioCount}_nombre">
+                    </div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Fecha Nacimiento</label>
+                        <input type="date" name="primerBenef_${primerBeneficiarioCount}_fechaNac">
+                    </div>
+                    <div class="form-group">
+                        <label>Parentesco</label>
+                        <select name="primerBenef_${primerBeneficiarioCount}_parentesco">
+                            <option value="">Seleccionar</option>
+                            <option value="Cónyuge">Cónyuge</option>
+                            <option value="Hijo/a">Hijo/a</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Domicilio</label>
+                        <input type="text" name="primerBenef_${primerBeneficiarioCount}_domicilio">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removePrimerBeneficiario(id) {
+            document.getElementById(`primerBenef${id}`).remove();
+        }
+
+        function addOtroBeneficiario() {
+            if (otroBeneficiarioCount >= 10) {
+                alert('Máximo 10 beneficiarios permitidos');
+                return;
+            }
+            otroBeneficiarioCount++;
+            const container = document.getElementById('otroBeneficiarioContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.id = `otroBenef${otroBeneficiarioCount}`;
+            div.innerHTML = `
+                <div class="dynamic-item-header">
+                    <div class="dynamic-item-title">Beneficiario #${otroBeneficiarioCount}</div>
+                    <button type="button" class="btn btn-remove" onclick="removeOtroBeneficiario(${otroBeneficiarioCount})">✕ Eliminar</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>DNI</label>
+                        <input type="text" name="otroBenef_${otroBeneficiarioCount}_dni" maxlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombres y Apellidos</label>
+                        <input type="text" name="otroBenef_${otroBeneficiarioCount}_nombre">
+                    </div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Fecha Nacimiento</label>
+                        <input type="date" name="otroBenef_${otroBeneficiarioCount}_fechaNac">
+                    </div>
+                    <div class="form-group">
+                        <label>Parentesco</label>
+                        <select name="otroBenef_${otroBeneficiarioCount}_parentesco">
+                            <option value="">Seleccionar</option>
+                            <option value="Padre">Padre</option>
+                            <option value="Madre">Madre</option>
+                            <option value="Hermano/a menor">Hermano/a menor de edad</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Domicilio</label>
+                        <input type="text" name="otroBenef_${otroBeneficiarioCount}_domicilio">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeOtroBeneficiario(id) {
+            document.getElementById(`otroBenef${id}`).remove();
+        }
+
+        // DJ QUINTA
+        function toggleDJQuinta() {
+            const djQuinta = document.querySelector('input[name="djQuinta"]:checked').value;
+            const message = document.getElementById('djQuintaMessage');
+            
+            if (djQuinta === 'Sí') {
+                message.classList.remove('hidden');
+            } else {
+                message.classList.add('hidden');
+            }
+        }
+
+        // AFP
+        function toggleAFP() {
+            const afp = document.getElementById('afp').value;
+            const cusppField = document.getElementById('afpCusppField');
+            const jubiladoMessage = document.getElementById('afpJubiladoMessage');
+            
+            // Ocultar ambos primero
+            cusppField.classList.add('hidden');
+            jubiladoMessage.classList.add('hidden');
+            document.getElementById('cuspp').removeAttribute('required');
+            
+            // Mostrar según selección
+            if (['Habitat', 'Integra', 'Prima', 'Profuturo'].includes(afp)) {
+                cusppField.classList.remove('hidden');
+                document.getElementById('cuspp').setAttribute('required', 'required');
+            } else if (afp === 'Jubilado') {
+                jubiladoMessage.classList.remove('hidden');
+            }
+        }
+
+        // BANCO
+        function updateBancoValidation() {
+            const banco = document.getElementById('banco').value;
+            const numeroCuenta = document.getElementById('numeroCuenta');
+            const cuentaHelp = document.getElementById('cuentaHelp');
+            const bancoOtroField = document.getElementById('bancoOtroField');
+            const bancoOtro = document.getElementById('bancoOtro');
+            
+            // Mostrar/ocultar campo "Otro banco"
+            if (banco === 'Otro') {
+                bancoOtroField.classList.remove('hidden');
+                bancoOtro.setAttribute('required', 'required');
+            } else {
+                bancoOtroField.classList.add('hidden');
+                bancoOtro.removeAttribute('required');
+            }
+            
+            // Validación de número de cuenta
+            const validaciones = {
+                'BCP': { digitos: 14, mensaje: 'BCP: 14 dígitos' },
+                'BBVA': { digitos: 18, mensaje: 'BBVA: 18 dígitos' },
+                'Scotiabank': { digitos: 10, mensaje: 'Scotiabank: 10 dígitos' },
+                'Interbank': { digitos: 13, mensaje: 'Interbank: 13 dígitos' },
+                'Otro': { digitos: null, mensaje: 'Ingrese el número de cuenta' }
+            };
+            
+            if (validaciones[banco]) {
+                const val = validaciones[banco];
+                cuentaHelp.textContent = val.mensaje;
+                
+                if (val.digitos) {
+                    numeroCuenta.setAttribute('maxlength', val.digitos);
+                    numeroCuenta.setAttribute('pattern', `[0-9]{${val.digitos}}`);
+                } else {
+                    numeroCuenta.removeAttribute('maxlength');
+                    numeroCuenta.removeAttribute('pattern');
+                }
+            } else {
+                cuentaHelp.textContent = 'Seleccione primero el banco';
+            }
+        }
+
+        // Guardar borrador - GUARDADO EN EXCEL TEMPORAL
+        async function guardarBorrador() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.className = 'save-indicator saving';
+            indicator.textContent = 'Guardando borrador...';
+            
+            try {
+                // Recopilar datos del formulario
+                const formData = new FormData(document.getElementById('onboardingForm'));
+                const datos = {};
+                for (let [key, value] of formData.entries()) {
+                    datos[key] = value;
+                }
+
+                // Llamar a Power Automate Flow BORRADOR
+                const FLOW_BORRADOR_URL = 'PEGAR_AQUI_URL_DEL_FLOW_BORRADOR';
+                
+                const response = await fetch(FLOW_BORRADOR_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        timestamp: new Date().toISOString(),
+                        numeroDocumento: datos.numeroDocumento,
+                        datos: datos
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al guardar borrador');
+                }
+                
+                indicator.className = 'save-indicator saved';
+                indicator.textContent = '✓ Borrador guardado';
+                setTimeout(() => {
+                    indicator.className = 'save-indicator';
+                }, 2000);
+                
+            } catch (error) {
+                indicator.className = 'save-indicator';
+                indicator.textContent = '';
+                console.error('Error al guardar:', error);
+                // No mostramos error al usuario para no interrumpir su trabajo
+            }
+        }
+
+        // Submit final - MODIFICADO PARA GENERAR PDFs
+        let pdfLinks = {};
+        
+        document.getElementById('onboardingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!confirm('¿Está seguro de enviar el formulario? Se generarán sus documentos.')) {
+                return;
+            }
+
+            // Mostrar loading
+            mostrarLoading('Generando documentos...', 'Esto puede tomar unos segundos');
+
+            try {
+                // Recopilar todos los datos del formulario
+                const formData = new FormData(this);
+                const datos = {};
+                for (let [key, value] of formData.entries()) {
+                    datos[key] = value;
+                }
+
+                // Llamar a Power Automate Flow 2
+                const FLOW_2_URL = 'PEGAR_AQUI_URL_DEL_FLOW_2';
+                
+                const response = await fetch(FLOW_2_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        timestamp: new Date().toISOString(),
+                        datos: datos
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al generar documentos');
+                }
+
+                const resultado = await response.json();
+                pdfLinks = resultado.pdfs || {};
+                
+                ocultarLoading();
+                mostrarPantallaDescarga();
+
+            } catch (error) {
+                ocultarLoading();
+                alert('Error al generar documentos: ' + error.message);
+                console.error(error);
+            }
+        });
+
+        // Inicializar campos obligatorios
+        addEstudio();
+        addCertificacion();
+        addExperiencia();
+        addExperiencia();
+        addReferencia();
+        addReferencia();
+
+        // ============================================================
+        // FUNCIONES PARA PANTALLAS 9 Y 10
+        // ============================================================
+        
+        let archivosSubidos = 0;
+        
+        // Mostrar/ocultar pantallas
+        function mostrarLoading(texto, subtexto) {
+            document.getElementById('loadingText').textContent = texto;
+            document.getElementById('loadingSubtext').textContent = subtexto;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function ocultarLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function mostrarPantallaDescarga() {
+            document.getElementById('onboardingForm').style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'none';
+            document.querySelector('.alert').style.display = 'none';
+            document.getElementById('pantallaDescarga').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function irAPantallaCarga() {
+            document.getElementById('pantallaDescarga').classList.add('hidden');
+            document.getElementById('pantallaCarga').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function volverADescarga() {
+            document.getElementById('pantallaCarga').classList.add('hidden');
+            document.getElementById('pantallaDescarga').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function mostrarPantallaFinal() {
+            document.getElementById('pantallaCarga').classList.add('hidden');
+            document.getElementById('pantallaFinal').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // Descargar PDFs
+        function descargarPDF(numero) {
+            const pdfKey = `pdf_${numero.toString().padStart(2, '0')}`;
+            
+            if (pdfLinks[pdfKey]) {
+                window.open(pdfLinks[pdfKey], '_blank');
+            } else {
+                alert('PDF no disponible. Por favor contacte a RRHH.');
+            }
+        }
+
+        // Validar archivos subidos
+        function validarArchivo(numero) {
+            const num = numero.toString().padStart(2, '0');
+            const input = document.getElementById(`upload_${num}`);
+            const file = input.files[0];
+            const statusEl = document.getElementById(`status_${num}`);
+            const infoEl = document.getElementById(`info_${num}`);
+            
+            if (file) {
+                // Validar tipo
+                if (file.type !== 'application/pdf') {
+                    alert('Solo se permiten archivos PDF');
+                    input.value = '';
+                    return;
+                }
+                
+                // Validar tamaño (máx 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('El archivo no debe superar 10MB');
+                    input.value = '';
+                    return;
+                }
+                
+                // Actualizar status
+                statusEl.textContent = 'Cargado ✓';
+                statusEl.classList.add('uploaded');
+                infoEl.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                
+                // Contar archivos subidos
+                archivosSubidos = document.querySelectorAll('.upload-status.uploaded').length;
+                
+                // Habilitar botón si todos están subidos
+                document.getElementById('btnEnviarFirmados').disabled = (archivosSubidos < 8);
+            }
+        }
+
+        // Enviar documentos firmados
+        async function enviarDocumentosFirmados() {
+            if (archivosSubidos < 8) {
+                alert('Debe cargar los 8 documentos antes de enviar');
+                return;
+            }
+
+            if (!confirm('¿Confirma que todos los documentos están firmados y desea enviarlos?')) {
+                return;
+            }
+
+            mostrarLoading('Enviando documentos...', 'Subiendo archivos a SharePoint');
+
+            try {
+                // Convertir archivos a Base64
+                const archivos = {};
+                for (let i = 1; i <= 8; i++) {
+                    const num = i.toString().padStart(2, '0');
+                    const input = document.getElementById(`upload_${num}`);
+                    const file = input.files[0];
+                    
+                    if (file) {
+                        const base64 = await convertirABase64(file);
+                        archivos[`documento_${num}`] = {
+                            nombre: file.name,
+                            contenido: base64,
+                            tipo: file.type
+                        };
+                    }
+                }
+
+                // Datos del colaborador
+                const datosColaborador = {
+                    numeroDocumento: document.getElementById('numeroDocumento').value,
+                    apellidoPaterno: document.getElementById('apellidoPaterno').value,
+                    apellidoMaterno: document.getElementById('apellidoMaterno').value,
+                    nombres: document.getElementById('nombres').value,
+                    email: document.getElementById('email').value
+                };
+
+                // Payload para Flow 3
+                const FLOW_3_URL = 'PEGAR_AQUI_URL_DEL_FLOW_3';
+                
+                const payload = {
+                    timestamp: new Date().toISOString(),
+                    colaborador: datosColaborador,
+                    documentos: archivos
+                };
+
+                // Llamar a Power Automate Flow 3
+                const response = await fetch(FLOW_3_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al enviar documentos');
+                }
+
+                ocultarLoading();
+                mostrarPantallaFinal();
+
+            } catch (error) {
+                ocultarLoading();
+                alert('Error al enviar documentos: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        // Convertir archivo a Base64
+        function convertirABase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+    </script>
+</body>
+</html>
