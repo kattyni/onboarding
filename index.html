@@ -1825,6 +1825,15 @@
                     datos[key] = value;
                 }
 
+                // Agregar campos disabled manualmente
+                datos.apellidoPaterno = document.getElementById('apellidoPaterno').value;
+                datos.apellidoMaterno = document.getElementById('apellidoMaterno').value;
+                datos.nombres = document.getElementById('nombres').value;
+                datos.tipoDocumento = document.getElementById('tipoDocumento').value;
+                datos.numeroDocumento = document.getElementById('numeroDocumento').value;
+                datos.email = document.getElementById('email').value;
+                datos.puesto = document.getElementById('puesto').value;
+
                 // Llamar a Power Automate Flow BORRADOR
                 const FLOW_BORRADOR_URL = 'https://default927072aa52764c309644620aab47dc.86.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/bf4c329933ca4377b473a12b239f7d2a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=BaYg_QOkAALov88L2-irffGLlMB5iT-WvDb3Nuksfhs';
                 
