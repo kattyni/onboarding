@@ -1833,11 +1833,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        timestamp: new Date().toISOString(),
-                        numeroDocumento: datos.numeroDocumento,
-                        datos: datos
-                    })
+                    body: JSON.stringify(datos)
                 });
 
                 if (!response.ok) {
